@@ -61,6 +61,44 @@ function TechStack() {
   );
 }
 
+function LinksRow() {
+  const resume = "/resume.pdf";
+  const github = "https://github.com/YOUR_GITHUB";
+  const linkedin = "https://www.linkedin.com/in/YOUR_LINKEDIN";
+  const email = "thomas@example.com";
+
+  const linkClass =
+    "flex items-center gap-3 px-10 py-2 text-lg text-zinc-700 underline hover:no-underline transition-colors hover:text-zinc-900";
+  const iconClass = "h-5 w-5 object-contain";
+
+  return (
+    <div className="mt-6 flex justify-center">
+      <nav className="flex items-center divide-x divide-zinc-300 rounded-xl bg-white px-4">
+        <a href={resume} target="_blank" rel="noreferrer" className={linkClass}>
+          <img src="/icons/resume.svg" alt="" className={iconClass} />
+          <span>Resume</span>
+        </a>
+
+        <a href={github} target="_blank" rel="noreferrer" className={linkClass}>
+          <img src="/icons/github.svg" alt="" className={iconClass} />
+          <span>GitHub</span>
+        </a>
+
+        <a href={linkedin} target="_blank" rel="noreferrer" className={linkClass}>
+          <img src="/icons/linkedin.svg" alt="" className={iconClass} />
+          <span>LinkedIn</span>
+        </a>
+
+        <a href={`mailto:${email}`} className={linkClass}>
+          <img src="/icons/email.svg" alt="" className={iconClass} />
+          <span>{email}</span>
+        </a>
+      </nav>
+    </div>
+  );
+}
+
+
 function ProfileCard({ loading, error }) {
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
@@ -131,19 +169,7 @@ function ProfileCard({ loading, error }) {
       <hr className="my-6 border-zinc-200" />
 
       {/* Links */}
-      <div className="mt-4 flex flex-wrap gap-3 text-sm">
-        {LINKS.map((l) => (
-          <a
-            key={l.label}
-            className="underline hover:no-underline"
-            href={l.href}
-            target={l.href.startsWith("http") ? "_blank" : undefined}
-            rel="noreferrer"
-          >
-            {l.label}
-          </a>
-        ))}
-      </div>
+      <LinksRow />
 
       {/* GitHub status */}
       <div className="mt-3">
@@ -234,8 +260,6 @@ function ProjectCard({ p }) {
 
 function ContactCard() {
   const email = "tmd.nyu@gmail.com";
-  const phoneNumber = "+12015549081";
-  const phoneNumberDisplay = "(201) 554-9081";
   const linkedin = "https://www.linkedin.com/in/YOUR_LINKEDIN";
   const github = "https://github.com/YOUR_GITHUB";
 
@@ -247,7 +271,7 @@ function ContactCard() {
         I’m always happy to talk about projects, systems, and engineering work.
       </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {/* Email */}
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
@@ -258,19 +282,6 @@ function ContactCard() {
             className="mt-1 inline-block text-sm underline hover:no-underline"
           >
             {email}
-          </a>
-        </div>
-
-        {/* Phone Number */}
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-            Phone Number
-          </p>
-          <a
-            href={`tel:${phoneNumber}`}
-            className="mt-1 inline-block text-sm underline hover:no-underline"
-          >
-            {phoneNumberDisplay}
           </a>
         </div>
 
