@@ -18,8 +18,13 @@ export const PROJECTS = [
     description:
       "Analyze .eml files, parse headers/MIME, detect suspicious links, and output structured JSON reports.",
     tags: ["Cybersecurity", "Systems"],
-    links: { demo: "" }, // GitHub URL will be filled automatically
     stack: ["Python"],
+    highlights: [
+    "Parses RFC 5322 headers + MIME parts to extract HTML/text/attachments",
+    "Flags suspicious signals (spoofed From/Reply-To, mismatched domains, risky URLs)",
+    "Exports a structured JSON report for automation and dashboards",
+    ],
+    links: { demo: "" }, // GitHub URL will be filled automatically
     featured: true,
     year: 2026,
   },
@@ -32,6 +37,11 @@ export const PROJECTS = [
       "Backend + data modeling + APIs. Built with reliability and clear workflows in mind.",
     tags: ["...", "..."],
     stack: ["Python", "Inno Setup"],
+    highlights: [
+    "Parses RFC 5322 headers + MIME parts to extract HTML/text/attachments",
+    "Flags suspicious signals (spoofed From/Reply-To, mismatched domains, risky URLs)",
+    "Exports a structured JSON report for automation and dashboards",
+    ],
     links: { demo: "" },
     featured: true,
     year: 2026,

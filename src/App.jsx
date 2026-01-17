@@ -2,6 +2,9 @@ import { useMemo, useState } from "react";
 import { LINKS, PROJECTS, GITHUB_USERNAME } from "./data/projects";
 import { useGithubRepoMeta } from "./hooks/useGithubRepoMeta";
 
+// For Header
+import Header from "./Header";
+
 function Chip({ active, children, onClick }) {
   return (
     <button
@@ -15,6 +18,20 @@ function Chip({ active, children, onClick }) {
     >
       {children}
     </button>
+  );
+}
+
+// Copy to Clipboard component
+function Toast({ message }) {
+  if (!message) return null;
+
+  return (
+    <div className="fixed bottom-8 right-8 z-9999 pointer-events-none">
+      <div className="toast animate-toast">
+        <span className="text-green-600 text-lg">✓</span>
+        <span>{message}</span>
+      </div>
+    </div>
   );
 }
 
@@ -52,7 +69,7 @@ function TechStack() {
             <img
               src={item.icon}
               alt={item.name}
-              className="h-15 w-15 object-contain"
+              className="h-12 w-12 object-contain"
             />
           </div>
         ))}
@@ -61,15 +78,38 @@ function TechStack() {
   );
 }
 
-function LinksRow() {
+function LinksRow({ onCopyEmail }) {
   const resume = "/resume.pdf";
   const github = "https://github.com/YOUR_GITHUB";
   const linkedin = "https://www.linkedin.com/in/YOUR_LINKEDIN";
-  const email = "thomas@example.com";
+  const email = "tmd.nyu@gmail.com";
 
   const linkClass =
     "flex items-center gap-3 px-10 py-2 text-lg text-zinc-700 underline hover:no-underline transition-colors hover:text-zinc-900";
   const iconClass = "h-5 w-5 object-contain";
+
+  async function handleCopyEmail(e) {
+    e.preventDefault(); // stops mailto
+    try {
+      await navigator.clipboard.writeText(email);
+      onCopyEmail?.("Email copied");
+    } catch {
+      // fallback if clipboard API is blocked
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = email;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        onCopyEmail?.("Email copied");
+      } catch {
+        onCopyEmail?.("Couldn’t copy email");
+      }
+    }
+  }
 
   return (
     <div className="mt-6 flex justify-center">
@@ -89,7 +129,8 @@ function LinksRow() {
           <span>LinkedIn</span>
         </a>
 
-        <a href={`mailto:${email}`} className={linkClass}>
+        {/* Email: copy to clipboard */}
+        <a href={`mailto:${email}`} onClick={handleCopyEmail} className={linkClass}>
           <img src="/icons/email.svg" alt="" className={iconClass} />
           <span>{email}</span>
         </a>
@@ -98,8 +139,7 @@ function LinksRow() {
   );
 }
 
-
-function ProfileCard({ loading, error }) {
+function ProfileCard({ loading, error, showToast }) {
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-4">
@@ -169,7 +209,7 @@ function ProfileCard({ loading, error }) {
       <hr className="my-6 border-zinc-200" />
 
       {/* Links */}
-      <LinksRow />
+      <LinksRow onCopyEmail={showToast} />
 
       {/* GitHub status */}
       <div className="mt-3">
@@ -187,6 +227,8 @@ function ProfileCard({ loading, error }) {
 
 
 function ProjectCard({ p }) {
+  const [open, setOpen] = useState(false);
+
   const updated =
     p.github?.updatedAt ? new Date(p.github.updatedAt).toLocaleDateString() : "";
 
@@ -231,6 +273,27 @@ function ProjectCard({ p }) {
         {updated && <span className="text-zinc-500">Updated {updated}</span>}
       </div>
 
+      {/* Highlights dropdown */}
+      {(p.highlights?.length ?? 0) > 0 && (
+        <details className="mt-4">
+          <summary className="list-none cursor-pointer select-none rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-50 transition">
+            <div className="flex items-center justify-between">
+              <span>Highlights</span>
+              <span className="text-xs text-zinc-500">{p.highlights.length} items</span>
+            </div>
+          </summary>
+
+          <div className="mt-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+            <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-700">
+              {p.highlights.map((h, idx) => (
+                <li key={idx}>{h}</li>
+              ))}
+            </ul>
+          </div>
+        </details>
+      )}
+
+
       {/* Links */}
       <div className="mt-4 flex flex-wrap gap-3 text-sm">
         {p.links?.github && (
@@ -258,10 +321,33 @@ function ProjectCard({ p }) {
   );
 }
 
-function ContactCard() {
+function ContactCard({ showToast }) {
   const email = "tmd.nyu@gmail.com";
   const linkedin = "https://www.linkedin.com/in/YOUR_LINKEDIN";
   const github = "https://github.com/YOUR_GITHUB";
+
+  async function handleCopyEmail(e) {
+    e.preventDefault();
+    try {
+      await navigator.clipboard.writeText(email);
+      showToast?.("Email copied");
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = email;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast?.("Email copied");
+      } catch {
+        showToast?.("Couldn’t copy email");
+      }
+    }
+  }
+
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
@@ -279,7 +365,9 @@ function ContactCard() {
           </p>
           <a
             href={`mailto:${email}`}
+            onClick={handleCopyEmail}
             className="mt-1 inline-block text-sm underline hover:no-underline"
+            title="Click to copy"
           >
             {email}
           </a>
@@ -323,6 +411,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [activeTags, setActiveTags] = useState(new Set());
   const [sort, setSort] = useState("featured");
+  const [toast, setToast] = useState("");
 
   const { enrichedProjects, loading, error } = useGithubRepoMeta(
     GITHUB_USERNAME,
@@ -380,13 +469,28 @@ export default function App() {
     setSort("featured");
   }
 
+  // Copy to Clipboard
+  function showToast(msg) {
+  setToast(msg);
+  window.clearTimeout(showToast._t);
+  showToast._t = window.setTimeout(() => setToast(""), 1500);
+  }
+
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
+
+      {/* Render toast */}
+      <Toast message={toast} />
+
+      {/* Header */}
+      <Header />
+
       <div className="mx-auto max-w-5xl px-5 py-12">
+
         <main>
           {/* Profile card at top */}
-          <section className="mb-8">
-            <ProfileCard loading={loading} error={error} />
+          <section className="mb-8 scroll-mt-24" id="home">
+            <ProfileCard loading={loading} error={error} showToast={showToast} />
           </section>
 
           {/* Separator */}
@@ -404,7 +508,7 @@ export default function App() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm outline-none focus:border-zinc-400"
+                className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 pr-2"
               >
                 <option value="featured">Sort: Featured</option>
                 <option value="newest">Sort: Newest</option>
@@ -436,7 +540,7 @@ export default function App() {
           </section>
 
           {/* Projects */}
-          <section className="mt-8">
+          <section className="mt-8 scroll-mt-24" id="projects">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Projects</h2>
               <p className="text-sm text-zinc-600">{filtered.length} shown</p>
@@ -453,11 +557,11 @@ export default function App() {
           <hr className="my-10 border-t border-zinc-200" /> 
 
           {/* Contact card */}
-          <section className="mt-8">
+          <section className="mt-8 scroll-mt-24" id="contact">
             <div className="grid gap-4 md:grid-cols-2">
               <h2 className="text-xl font-semibold">Contact Me</h2>
               <div className="md:col-span-2">
-                <ContactCard />
+                <ContactCard showToast={showToast} />
               </div>
             </div>
           </section>
