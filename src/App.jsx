@@ -1,37 +1,6 @@
 import { useMemo, useState } from "react";
-
-const LINKS = [
-  { label: "Resume", href: "/resume.pdf" }, // later you can place resume.pdf in /public
-  { label: "GitHub", href: "https://github.com/YOUR_GITHUB" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/YOUR_LINKEDIN" },
-];
-
-const PROJECTS = [
-  {
-    id: "phishlab",
-    name: "PhishLab",
-    tagline: "Email threat analysis toolkit + local mail lab",
-    description:
-      "Analyze .eml files, parse headers/MIME, detect suspicious links, and output structured JSON reports.",
-    tags: ["Cybersecurity", "Python", "Systems"],
-    links: { github: "https://github.com/YOUR_GITHUB/phishlab", demo: "" },
-    featured: true,
-    year: 2026,
-  },
-  {
-    id: "gmatch",
-    name: "GMatch",
-    tagline: "Full-stack platform prototype",
-    description:
-      "Backend + data modeling + APIs. Built with reliability and clear workflows in mind.",
-    tags: ["Full-Stack", "React", "Databases"],
-    links: { github: "https://github.com/YOUR_GITHUB/gmatch", demo: "" },
-    featured: true,
-    year: 2026,
-  },
-];
-
-const ALL_TAGS = Array.from(new Set(PROJECTS.flatMap((p) => p.tags))).sort();
+import { LINKS, PROJECTS, GITHUB_USERNAME } from "./data/projects";
+import { useGithubRepoMeta } from "./hooks/useGithubRepoMeta";
 
 function Chip({ active, children, onClick }) {
   return (
@@ -49,7 +18,68 @@ function Chip({ active, children, onClick }) {
   );
 }
 
+function ProfileCard({ loading, error }) {
+  return (
+    <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="flex items-center gap-4">
+        {/* profile image */}
+        <img
+          src="/ProfilePicture.jpg"
+          alt="Profile"
+          className="h-16 w-16 rounded-2xl object-cover border border-zinc-200"
+        />
+
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">
+            Thomas Motais De Narbonne
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600">
+            CS @ NYU Tandon • Software Engineering • Cybersecurity • Systems
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-4 text-sm text-zinc-700">
+        I’m a CS student at NYU Tandon focused on building practical systems—
+        security tooling, automation pipelines, and full-stack applications.
+        I like projects with real-world constraints: reliability, scale, and
+        clean interfaces.
+      </p>
+
+      {/* Links */}
+      <div className="mt-4 flex flex-wrap gap-3 text-sm">
+        {LINKS.map((l) => (
+          <a
+            key={l.label}
+            className="underline hover:no-underline"
+            href={l.href}
+            target={l.href.startsWith("http") ? "_blank" : undefined}
+            rel="noreferrer"
+          >
+            {l.label}
+          </a>
+        ))}
+      </div>
+
+      {/* GitHub status */}
+      <div className="mt-3">
+        {loading ? (
+          <span className="text-xs text-zinc-500">
+            Loading GitHub metadata…
+          </span>
+        ) : error ? (
+          <span className="text-xs text-zinc-500">{error}</span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+
 function ProjectCard({ p }) {
+  const updated =
+    p.github?.updatedAt ? new Date(p.github.updatedAt).toLocaleDateString() : "";
+
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm hover:shadow-md transition">
       <div className="flex items-start justify-between gap-4">
@@ -62,8 +92,9 @@ function ProjectCard({ p }) {
 
       <p className="mt-3 text-sm text-zinc-700">{p.description}</p>
 
+      {/* Tags */}
       <div className="mt-4 flex flex-wrap gap-2">
-        {p.tags.map((t) => (
+        {(p.tags || []).map((t) => (
           <span
             key={t}
             className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-700"
@@ -73,17 +104,121 @@ function ProjectCard({ p }) {
         ))}
       </div>
 
+      {/* Stack */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {(p.stack || []).map((s) => (
+          <span
+            key={s}
+            className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-700"
+          >
+            {s}
+          </span>
+        ))}
+      </div>
+
+      {/* GitHub metadata */}
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-zinc-600">
+        {updated && <span className="text-zinc-500">Updated {updated}</span>}
+      </div>
+
+      {/* Links */}
       <div className="mt-4 flex flex-wrap gap-3 text-sm">
-        {p.links.github && (
-          <a className="underline hover:no-underline" href={p.links.github} target="_blank" rel="noreferrer">
-            GitHub
+        {p.links?.github && (
+          <a
+            className="underline hover:no-underline"
+            href={p.links.github}
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub Repo
           </a>
         )}
-        {p.links.demo && (
-          <a className="underline hover:no-underline" href={p.links.demo} target="_blank" rel="noreferrer">
+        {p.links?.demo && (
+          <a
+            className="underline hover:no-underline"
+            href={p.links.demo}
+            target="_blank"
+            rel="noreferrer"
+          >
             Live demo
           </a>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ContactCard() {
+  const email = "thomas@example.com";
+  const phoneNumber = "+12015549081";
+  const phoneNumberDisplay = "(201) 554-9081";
+  const linkedin = "https://www.linkedin.com/in/YOUR_LINKEDIN";
+  const github = "https://github.com/YOUR_GITHUB";
+
+  return (
+    <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+
+      <p className="mt-2 max-w-4xl text-base text-zinc-600">
+        Interested in internships, research, or collaboration?  
+        I’m always happy to talk about projects, systems, and engineering work.
+      </p>
+
+      <div className="mt-6 grid gap-4 sm:grid-cols-4">
+        {/* Email */}
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+            Email
+          </p>
+          <a
+            href={`mailto:${email}`}
+            className="mt-1 inline-block text-sm underline hover:no-underline"
+          >
+            {email}
+          </a>
+        </div>
+
+        {/* Phone Number */}
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+            Phone Number
+          </p>
+          <a
+            href={`tel:${phoneNumber}`}
+            className="mt-1 inline-block text-sm underline hover:no-underline"
+          >
+            {phoneNumberDisplay}
+          </a>
+        </div>
+
+        {/* LinkedIn */}
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+            LinkedIn
+          </p>
+          <a
+            href={linkedin}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 inline-block text-sm underline hover:no-underline"
+          >
+            View profile
+          </a>
+        </div>
+
+        {/* GitHub */}
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+            GitHub
+          </p>
+          <a
+            href={github}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 inline-block text-sm underline hover:no-underline"
+          >
+            View repositories
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -94,19 +229,31 @@ export default function App() {
   const [activeTags, setActiveTags] = useState(new Set());
   const [sort, setSort] = useState("featured");
 
+  const { enrichedProjects, loading, error } = useGithubRepoMeta(
+    GITHUB_USERNAME,
+    PROJECTS
+  );
+
+  const allTags = useMemo(
+    () =>
+      Array.from(new Set(enrichedProjects.flatMap((p) => p.tags || []))).sort(),
+    [enrichedProjects]
+  );
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    let list = PROJECTS.filter((p) => {
+    let list = enrichedProjects.filter((p) => {
       const matchesQuery =
         !q ||
         p.name.toLowerCase().includes(q) ||
         p.tagline.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q));
+        (p.tags || []).some((t) => t.toLowerCase().includes(q)) ||
+        (p.stack || []).some((s) => s.toLowerCase().includes(q));
 
       const matchesTags =
-        activeTags.size === 0 || p.tags.some((t) => activeTags.has(t));
+        activeTags.size === 0 || (p.tags || []).some((t) => activeTags.has(t));
 
       return matchesQuery && matchesTags;
     });
@@ -122,7 +269,7 @@ export default function App() {
     }
 
     return list;
-  }, [query, activeTags, sort]);
+  }, [query, activeTags, sort, enrichedProjects]);
 
   function toggleTag(tag) {
     setActiveTags((prev) => {
@@ -141,75 +288,91 @@ export default function App() {
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
       <div className="mx-auto max-w-5xl px-5 py-12">
-        <header className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Thomas Motais</h1>
-            <p className="mt-1 text-zinc-600">
-              CS @ NYU Tandon • Software Engineering • Cybersecurity • Systems
-            </p>
+        <main>
+          {/* Profile card at top */}
+          <section className="mb-8">
+            <ProfileCard loading={loading} error={error} />
+          </section>
 
-            <div className="mt-3 flex flex-wrap gap-3 text-sm">
-              {LINKS.map((l) => (
-                <a key={l.label} className="underline hover:no-underline" href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">
-                  {l.label}
-                </a>
-              ))}
-            </div>
-          </div>
+          {/* Separator */}
+          <hr className="my-10 border-t border-zinc-200" /> 
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {/* Search / Sort */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search projects…"
-              className="w-full sm:w-64 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm outline-none focus:border-zinc-400"
+              className="w-full sm:w-72 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm outline-none focus:border-zinc-400"
             />
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm outline-none focus:border-zinc-400"
-            >
-              <option value="featured">Sort: Featured</option>
-              <option value="newest">Sort: Newest</option>
-              <option value="az">Sort: A → Z</option>
-            </select>
-            <button
-              onClick={clear}
-              className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm hover:border-zinc-400"
-            >
-              Clear
-            </button>
-          </div>
-        </header>
-
-        <section className="mt-8">
-          <h2 className="text-sm font-semibold text-zinc-700">Filters</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {ALL_TAGS.map((t) => (
-              <Chip key={t} active={activeTags.has(t)} onClick={() => toggleTag(t)}>
-                {t}
-              </Chip>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Projects</h2>
-            <p className="text-sm text-zinc-600">{filtered.length} shown</p>
+            <div className="flex gap-3">
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm outline-none focus:border-zinc-400"
+              >
+                <option value="featured">Sort: Featured</option>
+                <option value="newest">Sort: Newest</option>
+                <option value="az">Sort: A → Z</option>
+              </select>
+              <button
+                onClick={clear}
+                className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm hover:border-zinc-400"
+              >
+                Clear
+              </button>
+            </div>
           </div>
 
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            {filtered.map((p) => (
-              <ProjectCard key={p.id} p={p} />
-            ))}
-          </div>
-        </section>
+          {/* Filters */}
+          <section className="mt-6">
+            <h2 className="text-sm font-semibold text-zinc-700">Filters</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {allTags.map((t) => (
+                <Chip
+                  key={t}
+                  active={activeTags.has(t)}
+                  onClick={() => toggleTag(t)}
+                >
+                  {t}
+                </Chip>
+              ))}
+            </div>
+          </section>
 
-        <footer className="mt-12 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
-          <p>© {new Date().getFullYear()} Thomas Motais</p>
-        </footer>
+          {/* Projects */}
+          <section className="mt-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Projects</h2>
+              <p className="text-sm text-zinc-600">{filtered.length} shown</p>
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {filtered.map((p) => (
+                <ProjectCard key={p.id} p={p} />
+              ))}
+            </div>
+          </section>
+
+          {/* Separator */}
+          <hr className="my-10 border-t border-zinc-200" /> 
+
+          {/* Contact card */}
+          <section className="mt-8">
+            <div className="grid gap-4 md:grid-cols-2">
+              <h2 className="text-xl font-semibold">Contact Me</h2>
+              <div className="md:col-span-2">
+                <ContactCard />
+              </div>
+            </div>
+          </section>
+
+          <footer className="mt-12 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
+            <p>© {new Date().getFullYear()} Thomas Motais De Narbonne</p>
+          </footer>
+        </main>
       </div>
     </div>
   );
 }
+

@@ -2,12 +2,60 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- Mobile / responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vite</title>
+
+    <!-- Title + description (SEO) -->
+    <title>Thomas Motais | CS @ NYU Tandon</title>
+    <meta
+      name="description"
+      content="Personal portfolio of Thomas Motais — Computer Science @ NYU Tandon. Projects in software engineering, cybersecurity, and systems."
+    />
+
+    <!-- Theme color (mobile browser UI color) -->
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Optional PNG fallback: place favicon.png in /public -->
+    <!-- <link rel="icon" type="image/png" href="/favicon.png" /> -->
+
+    <!-- Canonical (optional, but nice for SEO) -->
+    <link rel="canonical" href="https://thomasmotaisportfolio.net/" />
+
+    <!-- Open Graph (LinkedIn, Facebook) -->
+    <meta property="og:site_name" content="Thomas Motais" />
+    <meta property="og:title" content="Thomas Motais | CS @ NYU Tandon" />
+    <meta
+      property="og:description"
+      content="Projects in software engineering, cybersecurity, and systems."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://thomasmotaisportfolio.net/" />
+    <!-- Put an image at /public/og.png (recommended 1200x630) -->
+    <meta property="og:image" content="https://thomasmotaisportfolio.net/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter/X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Thomas Motais | CS @ NYU Tandon" />
+    <meta
+      name="twitter:description"
+      content="Projects in software engineering, cybersecurity, and systems."
+    />
+    <meta name="twitter:image" content="https://thomasmotaisportfolio.net/og.png" />
+
+    <!-- Prevent “flash” when Tailwind dark mode is used later (optional) -->
+    <meta name="color-scheme" content="light dark" />
   </head>
-  <body>
+
+  <body class="bg-white text-zinc-900">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+
+    <!-- Vite entry -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
