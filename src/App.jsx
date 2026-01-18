@@ -82,9 +82,9 @@ function TechStack() {
 }
 
 function LinksRow({ onCopyEmail }) {
-  const resume = "/resume.pdf";
-  const github = "https://github.com/YOUR_GITHUB";
-  const linkedin = "https://www.linkedin.com/in/YOUR_LINKEDIN";
+  const resume = "/Thomas Motais De Narbonne Resume.pdf";
+  const github = "https://github.com/tomakun123";
+  const linkedin = "https://www.linkedin.com/in/thomas-motais-de-narbonne/";
   const email = "tmd.nyu@gmail.com";
 
   const linkClass =
@@ -117,7 +117,13 @@ function LinksRow({ onCopyEmail }) {
   return (
     <div className="mt-6 flex justify-center">
       <nav className="flex items-center divide-x divide-zinc-300 rounded-xl bg-white px-4">
-        <a href={resume} target="_blank" rel="noreferrer" className={linkClass}>
+        <a
+          href={resume}
+          target="_blank"
+          rel="noreferrer"
+          download="Thomas_Motais_De_Narbonne_Resume.pdf"
+          className={linkClass}
+        >
           <img src="/icons/resume.svg" alt="" className={iconClass} />
           <span>Resume</span>
         </a>
@@ -274,19 +280,6 @@ function WorkCard({ w }) {
                 ))}
               </div>
             )}
-
-            {w.link && (
-              <div className="mt-4">
-                <a
-                  href={w.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-sm underline hover:no-underline"
-                >
-                  Learn more
-                </a>
-              </div>
-            )}
           </div>
         </div>
       </details>
@@ -296,12 +289,11 @@ function WorkCard({ w }) {
 
 function ProjectCard({ p }) {
   const [open, setOpen] = useState(false);
-
   const updated =
     p.github?.updatedAt ? new Date(p.github.updatedAt).toLocaleDateString() : "";
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm hover:shadow-md transition">
+    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm hover:shadow-md transition h-full flex flex-col">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold">{p.name}</h3>
@@ -340,27 +332,49 @@ function ProjectCard({ p }) {
       <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-zinc-600">
         {updated && <span className="text-zinc-500">Updated {updated}</span>}
       </div>
-
+      
       {/* Highlights dropdown */}
+      <div className="mt-auto" />
       {(p.highlights?.length ?? 0) > 0 && (
-        <details className="mt-4">
-          <summary className="list-none cursor-pointer select-none rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-50 transition">
+        <div className="mt-4 relative">
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-50 transition text-left"
+          >
             <div className="flex items-center justify-between">
               <span>Highlights</span>
-              <span className="text-xs text-zinc-500">{p.highlights.length} items</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-zinc-500">{p.highlights.length} items</span>
+                <span className={`text-zinc-400 transition-transform ${open ? "rotate-90" : ""}`}>
+                  ›
+                </span>
+              </div>
             </div>
-          </summary>
+          </button>
 
-          <div className="mt-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
-            <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-700">
-              {p.highlights.map((h, idx) => (
-                <li key={idx}>{h}</li>
-              ))}
-            </ul>
-          </div>
-        </details>
+          {open && (
+            <>
+              {/* local click-away layer: only covers this card area */}
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="absolute inset-0 z-40"
+                aria-label="Close highlights"
+              />
+
+              {/* dropdown panel */}
+              <div className="absolute left-0 right-0 z-50 mt-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4 shadow-lg max-h-64 overflow-auto">
+                <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-700">
+                  {p.highlights.map((h, idx) => (
+                    <li key={idx}>{h}</li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+        </div>
       )}
-
 
       {/* Links */}
       <div className="mt-4 flex flex-wrap gap-3 text-sm">
@@ -372,16 +386,6 @@ function ProjectCard({ p }) {
             rel="noreferrer"
           >
             GitHub Repo
-          </a>
-        )}
-        {p.links?.demo && (
-          <a
-            className="underline hover:no-underline"
-            href={p.links.demo}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Live demo
           </a>
         )}
       </div>
@@ -418,23 +422,23 @@ function ContactCard({ showToast }) {
 
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+    <div className="rounded-2xl border border-zinc-200 bg-white pl-10 pb-5 p-3 shadow-sm">
 
-      <p className="mt-2 max-w-4xl text-base text-zinc-600">
+      <p className="mt-2 max-w-4xl text-lg text-zinc-600">
         Interested in internships, research, or collaboration?  
         I’m always happy to talk about projects, systems, and engineering work.
       </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
         {/* Email */}
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+          <p className="text-base font-medium uppercase tracking-wide text-zinc-500">
             Email
           </p>
           <a
             href={`mailto:${email}`}
             onClick={handleCopyEmail}
-            className="mt-1 inline-block text-sm underline hover:no-underline"
+            className="mt-1 inline-block text-lg underline hover:no-underline"
             title="Click to copy"
           >
             {email}
@@ -443,14 +447,14 @@ function ContactCard({ showToast }) {
 
         {/* LinkedIn */}
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+          <p className="text-base font-medium uppercase tracking-wide text-zinc-500">
             LinkedIn
           </p>
           <a
             href={linkedin}
             target="_blank"
             rel="noreferrer"
-            className="mt-1 inline-block text-sm underline hover:no-underline"
+            className="mt-1 inline-block text-lg underline hover:no-underline"
           >
             View profile
           </a>
@@ -458,14 +462,14 @@ function ContactCard({ showToast }) {
 
         {/* GitHub */}
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+          <p className="text-base font-medium uppercase tracking-wide text-zinc-500">
             GitHub
           </p>
           <a
             href={github}
             target="_blank"
             rel="noreferrer"
-            className="mt-1 inline-block text-sm underline hover:no-underline"
+            className="mt-1 inline-block text-lg underline hover:no-underline"
           >
             View repositories
           </a>
@@ -568,7 +572,7 @@ export default function App() {
           {/* Work */}
           <section className="mt-8 scroll-mt-24" id="work">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Work Experience</h2>
+              <h2 className="text-2xl font-semibold">Work Experience</h2>
               <p className="text-sm text-zinc-600">{WORKS.length} roles</p>
             </div>
 
@@ -611,7 +615,7 @@ export default function App() {
 
           {/* Filters */}
           <section className="mt-6">
-            <h2 className="text-sm font-semibold text-zinc-700">Filters</h2>
+            <h2 className="text-base font-semibold text-zinc-700">Filters</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {allTags.map((t) => (
                 <Chip
@@ -628,7 +632,7 @@ export default function App() {
           {/* Projects */}
           <section className="mt-8 scroll-mt-24" id="projects">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Projects</h2>
+              <h2 className="text-2xl font-semibold">Projects</h2>
               <p className="text-sm text-zinc-600">{filtered.length} shown</p>
             </div>
 
@@ -645,7 +649,7 @@ export default function App() {
           {/* Contact card */}
           <section className="mt-8 scroll-mt-24" id="contact">
             <div className="grid gap-4 md:grid-cols-2">
-              <h2 className="text-xl font-semibold">Contact Me</h2>
+              <h2 className="text-2xl font-semibold">Contact Me</h2>
               <div className="md:col-span-2">
                 <ContactCard showToast={showToast} />
               </div>
