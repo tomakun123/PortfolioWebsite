@@ -15,18 +15,32 @@ function pickRepoFields(r) {
   };
 }
 
-export function useGithubRepoMeta(username, projects) {
-  const repoNames = useMemo(
-    () => projects.map((p) => p.repo).filter(Boolean),
-    [projects]
-  );
+// "owner/repo" for a project, or null if it has no public repo
+function repoPath(p, username) {
+  return p.repo ? `${p.owner || username}/${p.repo}` : null;
+}
 
-  const [metaByRepo, setMetaByRepo] = useState({});
+export function useGithubRepoMeta(username, projects) {
+  // [projectId, "owner/repo"] for every project with a repo
+  const targets = useMemo(
+    () =>
+      projects
+        .map((p) => [p.id, repoPath(p, username)])
+        .filter(([, path]) => path),
+    [projects, username]
+  );
+  // Stable dependency for the fetch effect
+  const targetsKey = targets.map(([id, path]) => `${id}=${path}`).join("|");
+
+  const [metaById, setMetaById] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
+    const list = targetsKey
+      ? targetsKey.split("|").map((t) => t.split("="))
+      : [];
 
     async function run() {
       try {
@@ -35,20 +49,20 @@ export function useGithubRepoMeta(username, projects) {
 
         // Fetch each repo endpoint (clean + simple + works well for small lists)
         const results = await Promise.all(
-            repoNames.map(async (repo) => {
+            list.map(async ([id, path]) => {
                 try {
-                const res = await fetch(`https://api.github.com/repos/${username}/${repo}`);
-                if (!res.ok) return [repo, null]; // don't throw
+                const res = await fetch(`https://api.github.com/repos/${path}`);
+                if (!res.ok) return [id, null]; // don't throw
                 const data = await res.json();
-                return [repo, pickRepoFields(data)];
+                return [id, pickRepoFields(data)];
                 } catch {
-                return [repo, null];
+                return [id, null];
                 }
         })
         );
 
         const next = Object.fromEntries(results.filter(([, v]) => v));
-        if (!cancelled) setMetaByRepo(next);
+        if (!cancelled) setMetaById(next);
 
       } catch (e) {
         if (!cancelled) setError(e.message || "Failed to load GitHub metadata");
@@ -58,8 +72,8 @@ export function useGithubRepoMeta(username, projects) {
     }
 
     // If no repos, don’t fetch
-    if (repoNames.length === 0) {
-      setMetaByRepo({});
+    if (list.length === 0) {
+      setMetaById({});
       setLoading(false);
       setError("");
       return;
@@ -69,13 +83,14 @@ export function useGithubRepoMeta(username, projects) {
     return () => {
       cancelled = true;
     };
-  }, [username, repoNames.join("|")]);
+  }, [targetsKey]);
 
   // Merge into project objects
   const enrichedProjects = useMemo(() => {
     return projects.map((p) => {
-      const meta = metaByRepo[p.repo];
-      const githubUrl = meta?.html_url || `https://github.com/${username}/${p.repo}`;
+      const meta = metaById[p.id];
+      const path = repoPath(p, username);
+      const githubUrl = meta?.html_url || (path && `https://github.com/${path}`);
 
       return {
         ...p,
@@ -85,13 +100,14 @@ export function useGithubRepoMeta(username, projects) {
               homepage: meta.homepage,
             }
           : null,
-        links: {
-          ...p.links,
-          github: githubUrl,
-        },
+        // GitHub link first (if the project has a repo), then any extra links
+        links: [
+          ...(githubUrl ? [{ label: "GitHub Repo", href: githubUrl }] : []),
+          ...(p.links || []),
+        ],
       };
     });
-  }, [projects, metaByRepo, username]);
+  }, [projects, metaById, username]);
 
   return { enrichedProjects, loading, error };
 }

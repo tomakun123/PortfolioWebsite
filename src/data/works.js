@@ -2,6 +2,52 @@
 
 export const WORKS = [
     {
+        id: "equal-experts-swe",
+        company: "Equal Experts",
+        role: "Software Engineer Intern",
+        location: "London, UK",
+        date: "Aug 2026",
+        highlights: [
+            "Extended an email-only timesheet reminder system using Python, Google Cloud Functions, Java, and Vue, adding a Slack notification channel for client reminders.",
+            "Resolved employee IDs to Slack accounts using Cypher and Neo4j, eliminating notification mismatches caused by duplicate or unmatched accounts.",
+            "Built a TDD-driven admin tool using Python, Java, and Vue/TypeScript, enabling developers to trigger and verify test Slack notifications across the full stack.",
+            "Developed unit and integration tests with structured error handling, validating recipient resolution, message delivery, and failure scenarios end-to-end.",
+        ],
+        stack: [
+            "Python",
+            "Java",
+            "Vue",
+            "TypeScript",
+            "Google Cloud Functions",
+            "Neo4j",
+            "Cypher",
+            "Slack API",
+            "TDD",
+        ],
+    },
+
+    {
+        id: "gameon-scheduler-sde",
+        company: "GameOn Scheduler",
+        role: "Software Developer Intern",
+        location: "Remote",
+        date: "Jan 2026 – May 2026",
+        highlights: [
+            "Engineered AI-powered outbound calling agents with Vapi, migrating from Twilio to improve flexibility and reduce costs; automated product-demo scheduling across 5 facility verticals.",
+            "Developed real-time conversation logic that adapted agent responses to client dialogue and triggered automated SMS confirmations and reminders.",
+            "Built an automated Excel/CSV data-cleaning pipeline with configurable column selection and null-value handling, reducing manual contact-list preparation.",
+        ],
+        stack: [
+            "Vapi",
+            "Twilio",
+            "Voice AI",
+            "SMS Automation",
+            "Python",
+            "Excel/CSV",
+        ],
+    },
+
+    {
         id: "giorgio-armani-it",
         company: "Giorgio Armani",
         role: "IT Intern",

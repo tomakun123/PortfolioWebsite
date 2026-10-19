@@ -98,7 +98,19 @@ Most of the content is plain data, so updating it rarely touches components.
 | Tech logos / icons | Add or replace SVGs in `public/tech/` or `public/icons/` |
 | Page title / SEO description | [`index.html`](index.html) |
 
-Each project entry's `repo` field is its GitHub repo name. The site uses it with `GITHUB_USERNAME` to fetch metadata from the GitHub API.
+Each project in `PROJECTS` uses these fields:
+
+| Field | Required | What it's for |
+| --- | --- | --- |
+| `id`, `name`, `tagline`, `year` | Yes | Card heading, subtitle and year |
+| `overview` | Yes | The **Overview** paragraph: what the project is, who uses it, and how it's used |
+| `technical` | Yes | The **How it's built** paragraph: stack, architecture, and how it works |
+| `tags`, `stack`, `highlights` | Yes | Filter chips, tech chips, and the Highlights dropdown |
+| `featured` | Yes | Featured projects sort first |
+| `status` | No | A small badge next to the year, e.g. `"In Development"` |
+| `repo` | No | GitHub repo name. Adds a "GitHub Repo" link and an "Updated" date from the GitHub API. Leave it out for private repos |
+| `owner` | No | GitHub owner of `repo`, if it isn't you (defaults to `GITHUB_USERNAME`) |
+| `links` | No | Extra links shown after the GitHub link: `[{ label: "Website", href: "https://..." }]` |
 
 ## Building for production
 

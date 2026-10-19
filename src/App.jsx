@@ -85,7 +85,7 @@ function LinksRow({ onCopyEmail }) {
   const resume = "/Thomas Motais De Narbonne Resume.pdf";
   const github = "https://github.com/tomakun123";
   const linkedin = "https://www.linkedin.com/in/thomas-motais-de-narbonne/";
-  const email = "tmd.nyu@gmail.com";
+  const email = "tsm6956@nyu.edu";
 
   const linkClass =
     "flex items-center gap-3 px-10 py-2 text-lg text-zinc-700 underline hover:no-underline transition-colors hover:text-zinc-900";
@@ -154,7 +154,7 @@ function ProfileCard({ loading, error, showToast }) {
       <div className="flex items-center gap-4">
         {/* profile image */}
         <img
-          src="/ProfilePicture.jpg"
+          src="/ProfilePicture.png"
           alt="Profile"
           className="h-25 w-25 rounded-2xl object-cover border border-zinc-200"
         />
@@ -199,11 +199,11 @@ function ProfileCard({ loading, error, showToast }) {
           <h3 className="font-semibold">Programming Languages:</h3>
           <p>Python, C++, JavaScript, SQL (MySQL, PostgreSQL)</p>
 
-          <h3 className="font-semibold">Web / Frameworks:</h3>
-          <p>HTML, CSS, React, Flask</p>
+          <h3 className="font-semibold">Frameworks / Cloud:</h3>
+          <p>React, Next.js, Flask, Azure, Google Cloud Functions, Supabase</p>
 
-          <h3 className="font-semibold">Tools & Systems:</h3>
-          <p>Git/GitHub, Linux, Windows, PowerShell, Azure, Supabase, Jupyter, n8n</p>
+          <h3 className="font-semibold">Tools:</h3>
+          <p>Neo4j, Git/GitHub, Linux, PowerShell, n8n, Slack API, Chrome Extensions API, Jupyter, Anthropic API</p>
 
           <h3 className="font-semibold">Languages:</h3>
           <p>English (Fluent), French (Fluent), Japanese (Fluent)</p>
@@ -299,10 +299,29 @@ function ProjectCard({ p }) {
           <h3 className="text-lg font-semibold">{p.name}</h3>
           <p className="text-sm text-zinc-600">{p.tagline}</p>
         </div>
-        <span className="text-xs text-zinc-500">{p.year}</span>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <span className="text-xs text-zinc-500">{p.year}</span>
+          {p.status && (
+            <span className="whitespace-nowrap rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-800">
+              {p.status}
+            </span>
+          )}
+        </div>
       </div>
 
-      <p className="mt-3 text-sm text-zinc-700">{p.description}</p>
+      {/* Overview + How it's built */}
+      <div className="mt-4">
+        <h4 className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+          Overview
+        </h4>
+        <p className="mt-1 text-sm text-zinc-700">{p.overview}</p>
+      </div>
+      <div className="mt-4">
+        <h4 className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+          How it's built
+        </h4>
+        <p className="mt-1 text-sm text-zinc-700">{p.technical}</p>
+      </div>
 
       {/* Tags */}
       <div className="mt-4 flex flex-wrap gap-2">
@@ -378,25 +397,26 @@ function ProjectCard({ p }) {
 
       {/* Links */}
       <div className="mt-4 flex flex-wrap gap-3 text-sm">
-        {p.links?.github && (
+        {(p.links || []).map((l) => (
           <a
+            key={l.href}
             className="underline hover:no-underline"
-            href={p.links.github}
+            href={l.href}
             target="_blank"
             rel="noreferrer"
           >
-            GitHub Repo
+            {l.label}
           </a>
-        )}
+        ))}
       </div>
     </div>
   );
 }
 
 function ContactCard({ showToast }) {
-  const email = "tmd.nyu@gmail.com";
-  const linkedin = "https://www.linkedin.com/in/YOUR_LINKEDIN";
-  const github = "https://github.com/YOUR_GITHUB";
+  const email = "tsm6956@nyu.edu";
+  const github = "https://github.com/tomakun123";
+  const linkedin = "https://www.linkedin.com/in/thomas-motais-de-narbonne/";
 
   async function handleCopyEmail(e) {
     e.preventDefault();
@@ -504,7 +524,8 @@ export default function App() {
         !q ||
         p.name.toLowerCase().includes(q) ||
         p.tagline.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
+        p.overview.toLowerCase().includes(q) ||
+        p.technical.toLowerCase().includes(q) ||
         (p.tags || []).some((t) => t.toLowerCase().includes(q)) ||
         (p.stack || []).some((s) => s.toLowerCase().includes(q));
 
