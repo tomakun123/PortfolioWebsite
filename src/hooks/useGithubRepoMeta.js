@@ -11,7 +11,7 @@ function pickRepoFields(r) {
     homepage: r.homepage || "",
     archived: r.archived,
     visibility: r.visibility,
-    defaultBranch: data.default_branch
+    defaultBranch: r.default_branch,
   };
 }
 
