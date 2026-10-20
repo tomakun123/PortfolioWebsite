@@ -6,7 +6,7 @@ My personal portfolio: about me, work experience, projects, coursework, resume, 
 
 ## Live site
 
-The site is at **https://thomasmotaisportfolio.net** and is hosted on [Hostinger](https://www.hostinger.com/). It serves the static production build (`dist/`) of this repo.
+The site is at **https://thomasmotaisportfolio.net** and is hosted on [Hostinger](https://www.hostinger.com/). It serves the static production build (`dist/`) of this repo, deployed automatically on every push to `main` (see [Deploying](#deploying)).
 
 ## Tech stack
 
@@ -139,6 +139,29 @@ Each project in `PROJECTS` uses these fields:
 npm run build
 ```
 
-This creates `dist/`, a folder of static HTML, CSS, JS, and assets. That's what the live site at https://thomasmotaisportfolio.net serves. Run `npm run preview` to check the build locally before publishing it.
+This creates `dist/`, a folder of static HTML, CSS, JS, and assets. Run `npm run preview` to check the build locally.
 
-When you upload `dist/` to Hostinger, make sure `dist/.htaccess` goes with it (it's a hidden file, so some FTP clients and file managers skip it). Without it, the home page still works, but refreshing or opening a direct link to `/work` or `/projects` returns a 404.
+## Deploying
+
+The live site at https://thomasmotaisportfolio.net updates automatically. Every push to `main` runs [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which:
+
+1. installs dependencies and runs `npm run lint` and `npm run build` (if either fails, nothing is uploaded), then
+2. uploads `dist/`, including the hidden `.htaccess`, to Hostinger over FTP. Only changed files are sent after the first deploy, and nothing on the server is deleted.
+
+Watch a deploy under **Actions** on GitHub. To redeploy without a new commit, open **Actions → Deploy to Hostinger → Run workflow**.
+
+### One-time setup
+
+1. **Back up the current site:** in hPanel, open **Websites → Manage → File Manager**, right-click `public_html`, choose **Compress**, and download the zip.
+2. **Get FTP details:** in hPanel, open **Files → FTP Accounts**. Note the FTP hostname and username, and set a password. Check the account's directory:
+   - if it is `public_html`, nothing else is needed;
+   - if it is the domain's home folder, also add a repository **variable** `FTP_SERVER_DIR` with the value `public_html/`.
+3. **Add the secrets on GitHub:** in the repo, open **Settings → Secrets and variables → Actions** and add three repository secrets: `FTP_SERVER`, `FTP_USERNAME` and `FTP_PASSWORD`.
+
+### Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| The FTP step fails with a TLS or handshake error | Change `protocol: ftps` to `protocol: ftp` in `deploy.yml` |
+| The deploy succeeded but the old page still shows | Flush the CDN cache in hPanel (**Performance → CDN**), then hard-refresh |
+| `/work` or `/projects` return 404 on the live site | `.htaccess` is missing from `public_html`. Check that `public/.htaccess` exists and run the workflow again |

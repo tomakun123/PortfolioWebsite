@@ -1,0 +1,40 @@
+# Builds the site and uploads dist/ to Hostinger over FTP on every push to main.
+# Needs repository secrets FTP_SERVER, FTP_USERNAME and FTP_PASSWORD
+# (and optionally the variable FTP_SERVER_DIR). See "Deploying" in README.md.
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # "Run workflow" button for manual redeploys
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # A lint error or failed build stops here, so it never reaches the live site
+      - run: npm run lint
+      - run: npm run build
+
+      - name: Upload to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps # change to "ftp" if Hostinger refuses the TLS connection
+          local-dir: ./dist/
+          server-dir: ${{ vars.FTP_SERVER_DIR || './' }}
