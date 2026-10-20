@@ -7,7 +7,7 @@ export default function NotFoundPage() {
   return (
     <section className="py-16 text-center">
       <h1 className="text-2xl font-semibold">Page not found</h1>
-      <p className="mt-2 text-zinc-600">That page doesn’t exist.</p>
+      <p className="mt-2 text-zinc-400">That page doesn’t exist.</p>
       <Link to="/" className="mt-6 inline-block underline hover:no-underline">
         Back to home
       </Link>

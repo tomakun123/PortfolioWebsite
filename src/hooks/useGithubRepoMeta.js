@@ -100,10 +100,10 @@ export function useGithubRepoMeta(username, projects) {
               homepage: meta.homepage,
             }
           : null,
-        // GitHub link first (if the project has a repo), then any extra links
+        // Project's own links first (live site, store), then GitHub if it has a repo
         links: [
-          ...(githubUrl ? [{ label: "GitHub Repo", href: githubUrl }] : []),
           ...(p.links || []),
+          ...(githubUrl ? [{ label: "GitHub", href: githubUrl, github: true }] : []),
         ],
       };
     });

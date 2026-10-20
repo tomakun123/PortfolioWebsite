@@ -1,81 +1,50 @@
-export default function ContactCard({ showToast }) {
-  const email = "tsm6956@nyu.edu";
-  const github = "https://github.com/tomakun123";
-  const linkedin = "https://www.linkedin.com/in/thomas-motais-de-narbonne/";
+import { CONTACT } from "../data/profile";
+import { copyEmail } from "../utils/copyEmail";
 
-  async function handleCopyEmail(e) {
+const labelClass = "font-mono text-xs uppercase tracking-[0.2em] text-zinc-500";
+const linkClass =
+  "mt-1 inline-block text-lg text-zinc-100 underline decoration-haze-400/50 underline-offset-4 transition hover:text-mint hover:decoration-mint";
+
+export default function ContactCard({ showToast }) {
+  function handleCopyEmail(e) {
     e.preventDefault();
-    try {
-      await navigator.clipboard.writeText(email);
-      showToast?.("Email copied");
-    } catch {
-      try {
-        const ta = document.createElement("textarea");
-        ta.value = email;
-        ta.style.position = "fixed";
-        ta.style.left = "-9999px";
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        showToast?.("Email copied");
-      } catch {
-        showToast?.("Couldn’t copy email");
-      }
-    }
+    copyEmail(CONTACT.email, showToast);
   }
 
-
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white pl-10 pb-5 p-3 shadow-sm">
+    <div className="glass rounded-3xl p-6 sm:p-8">
 
-      <p className="mt-2 max-w-4xl text-lg text-zinc-600">
-        Interested in internships, research, or collaboration?  
+      <p className="max-w-4xl text-lg text-zinc-300">
+        Interested in internships, research, or collaboration?
         I’m always happy to talk about projects, systems, and engineering work.
       </p>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 grid gap-5 sm:grid-cols-3">
         {/* Email */}
-        <div>
-          <p className="text-base font-medium uppercase tracking-wide text-zinc-500">
-            Email
-          </p>
+        <div className="min-w-0">
+          <p className={labelClass}>Email</p>
           <a
-            href={`mailto:${email}`}
+            href={`mailto:${CONTACT.email}`}
             onClick={handleCopyEmail}
-            className="mt-1 inline-block text-lg underline hover:no-underline"
+            className={`${linkClass} break-all`}
             title="Click to copy"
           >
-            {email}
+            {CONTACT.email}
           </a>
         </div>
 
         {/* LinkedIn */}
         <div>
-          <p className="text-base font-medium uppercase tracking-wide text-zinc-500">
-            LinkedIn
-          </p>
-          <a
-            href={linkedin}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-1 inline-block text-lg underline hover:no-underline"
-          >
+          <p className={labelClass}>LinkedIn</p>
+          <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className={linkClass}>
             View profile
           </a>
         </div>
 
         {/* GitHub */}
         <div>
-          <p className="text-base font-medium uppercase tracking-wide text-zinc-500">
-            GitHub
-          </p>
-          <a
-            href={github}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-1 inline-block text-lg underline hover:no-underline"
-          >
+          <p className={labelClass}>GitHub</p>
+          <a href={CONTACT.github} target="_blank" rel="noreferrer" className={linkClass}>
             View repositories
           </a>
         </div>

@@ -4,6 +4,8 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Toast from "./components/Toast";
 import ScrollToTop from "./components/ScrollToTop";
+import Haze from "./components/Haze";
+import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import WorkPage from "./pages/WorkPage";
 import ProjectsPage from "./pages/ProjectsPage";
@@ -21,7 +23,10 @@ function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
+    <div className="relative isolate min-h-screen bg-ink font-sans text-zinc-200 antialiased">
+
+      {/* Background glow */}
+      <Haze />
 
       {/* Render toast */}
       <Toast message={toast} />
@@ -37,9 +42,7 @@ function Layout() {
           <Outlet context={{ showToast }} />
         </main>
 
-        <footer className="mt-12 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
-          <p>© {new Date().getFullYear()} Thomas Motais De Narbonne</p>
-        </footer>
+        <Footer showToast={showToast} />
       </div>
     </div>
   );

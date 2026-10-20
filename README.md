@@ -105,30 +105,33 @@ Most of the content is plain data, so updating it rarely touches components.
 
 | To change... | Edit |
 | --- | --- |
-| Projects | `PROJECTS` in [`src/data/projects.js`](src/data/projects.js) |
+| Projects | `PROJECTS` in [`src/data/projects.js`](src/data/projects.js) (see the field list below) |
 | Work experience | `WORKS` in [`src/data/works.js`](src/data/works.js) |
 | Coursework | `COURSEWORK` in [`src/data/coursework.js`](src/data/coursework.js). Mark current courses with `status: "in-progress"` and update `CURRENT_TERM` each semester |
-| GitHub / LinkedIn / resume links | `LINKS` in [`src/data/projects.js`](src/data/projects.js) |
+| Name, school, About Me text | `PROFILE` in [`src/data/profile.js`](src/data/profile.js) |
+| Company logos under About Me | `PROFILE.experience` in [`src/data/profile.js`](src/data/profile.js), with logo files in `public/logos/` |
+| Email / GitHub / LinkedIn / resume links | `CONTACT` in [`src/data/profile.js`](src/data/profile.js) |
+| Skills & Tech Stack | `SKILL_GROUPS` and `SPOKEN_LANGUAGES` in [`src/data/skills.js`](src/data/skills.js). Skills are plain names; logos come from [`src/data/techIcons.js`](src/data/techIcons.js) ([simple-icons](https://simpleicons.org)), and unlisted names show a letter tile |
 | GitHub username used for repo metadata | `GITHUB_USERNAME` in [`src/data/projects.js`](src/data/projects.js) |
-| Resume PDF | Replace the file in `public/` (keep the filename, or update references to it) |
+| Resume PDF | Replace the file in `public/` (keep the filename, or update `CONTACT.resume`) |
 | Profile picture | Replace `public/ProfilePicture.png` |
 | Favicon (browser tab icon) | `public/favicon.svg` |
-| Tech logos / icons | Add or replace SVGs in `public/tech/` or `public/icons/` |
+| Theme colors and fonts | The `@theme` block in [`src/index.css`](src/index.css); background glow in [`src/components/Haze.jsx`](src/components/Haze.jsx) |
 | Page title / SEO description | [`index.html`](index.html) |
 
 Each project in `PROJECTS` uses these fields:
 
 | Field | Required | What it's for |
 | --- | --- | --- |
-| `id`, `name`, `tagline`, `year` | Yes | Card heading, subtitle and year |
-| `overview` | Yes | The **Overview** paragraph: what the project is, who uses it, and how it's used |
-| `technical` | Yes | The **How it's built** paragraph: stack, architecture, and how it works |
-| `tags`, `stack`, `highlights` | Yes | Filter chips, tech chips, and the Highlights dropdown |
-| `featured` | Yes | Featured projects sort first |
-| `status` | No | A small badge next to the year, e.g. `"In Development"` |
-| `repo` | No | GitHub repo name. Adds a "GitHub Repo" link and an "Updated" date from the GitHub API. Leave it out for private repos |
+| `id`, `name`, `tagline`, `year` | Yes | Card title, one-line subtitle and year |
+| `points` | Yes | Up to 3 short bullets. Wrap key numbers or tech in `**double asterisks**` to highlight them |
+| `stack` | Yes | The **Built with** logo chips. Names listed in [`src/data/techIcons.js`](src/data/techIcons.js) get a logo; others get a letter tile |
+| `categories` | Yes | Which tabs the project shows under: any of `ai`, `web`, `tools` (defined in `CATEGORIES`) |
+| `featured` | Yes | Featured projects sort first and get a "Featured" badge |
+| `status` | No | A small badge, e.g. `"In Development"` |
+| `links` | No | Link buttons: `[{ label: "Live site", href: "https://..." }]`. The first one is the big primary button |
+| `repo` | No | GitHub repo name. Adds a GitHub button (after `links`) and an "Updated" date from the GitHub API. Leave it out for private repos |
 | `owner` | No | GitHub owner of `repo`, if it isn't you (defaults to `GITHUB_USERNAME`) |
-| `links` | No | Extra links shown after the GitHub link: `[{ label: "Website", href: "https://..." }]` |
 
 ## Building for production
 
