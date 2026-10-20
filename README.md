@@ -1,6 +1,6 @@
 # Thomas Motais — Portfolio Website
 
-My personal portfolio: projects, work experience, resume, and links, in one page.
+My personal portfolio: about me, work experience, projects, coursework, resume, and links.
 
 **Live site:** [thomasmotaisportfolio.net](https://thomasmotaisportfolio.net)
 
@@ -11,6 +11,7 @@ The site is at **https://thomasmotaisportfolio.net** and is hosted on [Hostinger
 ## Tech stack
 
 - [React 19](https://react.dev/): UI
+- [React Router 7](https://reactrouter.com/): page routing
 - [Vite 7](https://vite.dev/): dev server and build tool
 - [Tailwind CSS 4](https://tailwindcss.com/): styling
 - [react-markdown](https://github.com/remarkjs/react-markdown) + [remark-gfm](https://github.com/remarkjs/remark-gfm): Markdown rendering
@@ -55,28 +56,44 @@ Then open http://localhost:5173.
 
 **Port already in use?** Vite will pick the next free port automatically and print it. To choose one yourself, run `npm run dev -- --port 3000`.
 
+## Pages
+
+| URL | Page | File |
+| --- | --- | --- |
+| `/` | About me + Contact | [`src/pages/HomePage.jsx`](src/pages/HomePage.jsx) |
+| `/work` | Work Experience | [`src/pages/WorkPage.jsx`](src/pages/WorkPage.jsx) |
+| `/projects` | Projects & Coursework | [`src/pages/ProjectsPage.jsx`](src/pages/ProjectsPage.jsx) |
+| anything else | 404 page | [`src/pages/NotFoundPage.jsx`](src/pages/NotFoundPage.jsx) |
+
+Routes are defined in [`src/App.jsx`](src/App.jsx), which also holds the shared layout (header, footer, copy-to-clipboard toast). To add a page, create it in `src/pages/`, add a `<Route>` in `App.jsx`, and add a link to `NAV` in [`src/components/Header.jsx`](src/components/Header.jsx).
+
 ## Project structure
 
 ```
 PortfolioWebsite/
-├── index.html              # HTML entry point, page title and SEO meta tags
+├── index.html              # HTML entry point, default page title and SEO meta tags
 ├── public/                 # Static files served as-is from the site root
-│   ├── ProfilePicture.jpg
+│   ├── .htaccess           # Sends /work, /projects, etc. to index.html on Hostinger
+│   ├── favicon.svg
+│   ├── ProfilePicture.png
 │   ├── Thomas Motais De Narbonne Resume.pdf
 │   ├── icons/              # Contact/link icons (email, GitHub, LinkedIn, resume)
 │   └── tech/               # Tech stack logos
 ├── scripts/
 │   └── setup.js            # `npm run setup`
 ├── src/
-│   ├── main.jsx            # React entry point
-│   ├── App.jsx             # Page layout and sections
-│   ├── Header.jsx          # Header with contact links + copy-to-clipboard
+│   ├── main.jsx            # React entry point (wraps the app in BrowserRouter)
+│   ├── App.jsx             # Layout + routes
 │   ├── index.css           # Tailwind import and global styles
+│   ├── pages/              # One file per page (see Pages above)
+│   ├── components/         # Header, cards, coursework section, toast, etc.
 │   ├── data/
 │   │   ├── projects.js     # Links, GitHub username, project list
-│   │   └── works.js        # Work experience
+│   │   ├── works.js        # Work experience
+│   │   └── coursework.js   # Courses, degree line, current term
 │   └── hooks/
-│       └── useGithubRepoMeta.js  # Fetches repo metadata from GitHub
+│       ├── useGithubRepoMeta.js  # Fetches repo metadata from GitHub
+│       └── usePageTitle.js       # Sets the browser tab title per page
 ├── vite.config.js
 ├── tailwind.config.js
 └── eslint.config.js
@@ -90,10 +107,11 @@ Most of the content is plain data, so updating it rarely touches components.
 | --- | --- |
 | Projects | `PROJECTS` in [`src/data/projects.js`](src/data/projects.js) |
 | Work experience | `WORKS` in [`src/data/works.js`](src/data/works.js) |
+| Coursework | `COURSEWORK` in [`src/data/coursework.js`](src/data/coursework.js). Mark current courses with `status: "in-progress"` and update `CURRENT_TERM` each semester |
 | GitHub / LinkedIn / resume links | `LINKS` in [`src/data/projects.js`](src/data/projects.js) |
 | GitHub username used for repo metadata | `GITHUB_USERNAME` in [`src/data/projects.js`](src/data/projects.js) |
 | Resume PDF | Replace the file in `public/` (keep the filename, or update references to it) |
-| Profile picture | Replace `public/ProfilePicture.jpg` |
+| Profile picture | Replace `public/ProfilePicture.png` |
 | Favicon (browser tab icon) | `public/favicon.svg` |
 | Tech logos / icons | Add or replace SVGs in `public/tech/` or `public/icons/` |
 | Page title / SEO description | [`index.html`](index.html) |
@@ -119,3 +137,5 @@ npm run build
 ```
 
 This creates `dist/`, a folder of static HTML, CSS, JS, and assets. That's what the live site at https://thomasmotaisportfolio.net serves. Run `npm run preview` to check the build locally before publishing it.
+
+When you upload `dist/` to Hostinger, make sure `dist/.htaccess` goes with it (it's a hidden file, so some FTP clients and file managers skip it). Without it, the home page still works, but refreshing or opening a direct link to `/work` or `/projects` returns a 404.
